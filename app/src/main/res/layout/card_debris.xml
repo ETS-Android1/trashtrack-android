@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:strokeWidth="2dp"
+
+    app:cardCornerRadius="40dp">
+
+    <ImageView
+        android:id="@+id/debris_iv"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/iridium_satellite_debris" />
+
+    <TextView
+        android:id="@+id/debris_name_tv"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/open_sans"
+        android:maxLines="2"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/debris_iv"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text=" Iridium 33 Debris" />
+
+    <TextView
+        android:id="@+id/creation_tv"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/open_sans"
+        android:maxLines="2"
+        android:textColor="#C6FFFFFF"
+        app:layout_constraintEnd_toEndOf="@+id/debris_name_tv"
+        app:layout_constraintStart_toStartOf="@+id/debris_name_tv"
+        app:layout_constraintTop_toBottomOf="@+id/debris_name_tv"
+        tools:text="Created on 2009" />
+
+    <TextView
+        android:id="@+id/origin_tv"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:fontFamily="@font/open_sans"
+        android:maxLines="2"
+        android:textColor="#C6FFFFFF"
+        app:layout_constraintEnd_toEndOf="@+id/creation_tv"
+        app:layout_constraintStart_toStartOf="@+id/debris_name_tv"
+        app:layout_constraintTop_toBottomOf="@+id/creation_tv"
+        tools:text="Origin: Iridium 33 satellite" />
+
+    <ImageView
+        android:id="@+id/globe_btn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/ic_globe_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/debris_iv"
+        app:layout_constraintStart_toStartOf="@+id/origin_tv"
+        app:layout_constraintTop_toBottomOf="@+id/origin_tv" />
+
+    <ImageView
+        android:id="@+id/map_btn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/ic_map_btn"
+        app:layout_constraintStart_toEndOf="@+id/globe_btn"
+        app:layout_constraintTop_toTopOf="@+id/globe_btn" />
+
+    <ImageView
+        android:id="@+id/graph_btn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/ic_bar_chart"
+        app:layout_constraintStart_toEndOf="@+id/map_btn"
+        app:layout_constraintTop_toTopOf="@+id/map_btn" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/stroke_color_1"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

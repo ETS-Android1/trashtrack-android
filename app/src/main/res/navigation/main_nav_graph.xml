@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/globeFragment"
+        android:name="spaceapps.buetzenith.trashtrack.view.screen.globe.GlobeFragment"
+        android:label="fragment_globe"
+        tools:layout="@layout/fragment_globe" />
+    <fragment
+        android:id="@+id/googleMapFragment"
+        android:name="spaceapps.buetzenith.trashtrack.view.screen.googlemap.GoogleMapFragment"
+        android:label="fragment_google_map"
+        tools:layout="@layout/fragment_google_map" />
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="spaceapps.buetzenith.trashtrack.view.screen.DetailsFragment"
+        android:label="fragment_details"
+        tools:layout="@layout/fragment_details" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="spaceapps.buetzenith.trashtrack.view.screen.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+
+</navigation>
