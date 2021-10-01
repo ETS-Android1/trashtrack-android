@@ -1,5 +1,6 @@
 package spaceapps.buetzenith.trashtrack.view.screen;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -61,14 +64,11 @@ public class HomeFragment extends Fragment {
         debrisListAdapter.setDebrisList(DebrisCatalog.debrisList);
 
         debrisListAdapter.setOnClickListener((debris, fragmentId) -> {
-            if(fragmentId == R.id.googleMapFragment){
+            Bundle bundle = new Bundle();
+            bundle.putString("debris", debris.toString());
 
-                Bundle bundle = new Bundle();
-                bundle.putString("debris", debris.toString());
-
-                NavHostFragment.findNavController(this)
-                        .navigate(fragmentId, bundle);
-            }
+            NavHostFragment.findNavController(this)
+                    .navigate(fragmentId, bundle);
         });
     }
 

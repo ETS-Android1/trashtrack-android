@@ -11,17 +11,23 @@ public class DebrisCatalog{
 
     public static List<Debris> debrisList = Arrays.asList(
             new Debris("IRIDIUM 33 Debris",
-                    "10 February, 2009",
+                    "10 February, 2009.",
                     "Iridium 33 satellite", R.drawable.iridium_satellite_debris
             , "iridium-33-debris.txt"),
             new Debris("COSMOS 2251 Debris",
-                    "10 February, 2009",
+                    "10 February, 2009.",
                     "COSMOS 2251 Satellite", R.drawable.strela_debris
             , "cosmos-2251-debris.txt"),
             new Debris("FENGYUN 1C Debris",
-                    "11 January, 2007",
+                    "11 January, 2007.",
                     "FENGYUN 1C weather Satellite", R.drawable.fy1,
-                    "1999-025.txt")
+                    "1999-025.txt"),
+            new Debris("Indian ASAT Test Debris",
+                    "27 march, 2019.",
+                    "Mission Shakti: Micro-R satellite",
+                    R.drawable.micro,
+                       "2019-006.txt"
+                    )
     );
 
     public static class Debris{

@@ -24,10 +24,10 @@ public class CameraController extends BasicWorldWindowController {
 
     @Override
     protected void handlePinch(GestureRecognizer recognizer) {
-        Log.d(TAG, "handlePinch: ");
+       // Log.d(TAG, "handlePinch: ");
         int state = recognizer.getState();
         float scale = ((PinchRecognizer) recognizer).getScale();
-        Log.d(TAG, "handlePinch: scale: "+scale);
+       // Log.d(TAG, "handlePinch: scale: "+scale);
 
         if (state == WorldWind.BEGAN) {
             this.gestureDidBegin();
@@ -36,10 +36,10 @@ public class CameraController extends BasicWorldWindowController {
                 // Apply the change in scale to the navigator, relative to when the gesture began.
                 scale = ((scale - 1) * 0.08f) + 1; // dampen the scale factor
                 double alt = this.camera.altitude/1000.0;
-                Log.d(TAG, "handlePinch: alt before: "+alt);
+               // Log.d(TAG, "handlePinch: alt before: "+alt);
                 this.camera.altitude = this.camera.altitude + this.camera.altitude * (1-scale);
                 alt = this.camera.altitude/1000.0;
-                Log.d(TAG, "handlePinch: alt after: "+alt);
+               // Log.d(TAG, "handlePinch: alt after: "+alt);
 
                // this.applyLimits(this.camera);
 
@@ -55,7 +55,7 @@ public class CameraController extends BasicWorldWindowController {
 
     @Override
     protected void gestureDidBegin() {
-        Log.d(TAG, "gestureDidBegin: ");
+      //  Log.d(TAG, "gestureDidBegin: ");
         if (this.activeGestures++ == 0) {
             this.wwd.getNavigator().getAsCamera(this.wwd.getGlobe(), this.beginCamera);
             this.camera.set(this.beginCamera);
@@ -63,7 +63,7 @@ public class CameraController extends BasicWorldWindowController {
     }
 
     protected void applyLimits(Camera camera) {
-        Log.d(TAG, "applyLimits: ");
+    //   Log.d(TAG, "applyLimits: ");
         double distanceToExtents = this.wwd.distanceToViewGlobeExtents();
 
         double minAltitude = 100;

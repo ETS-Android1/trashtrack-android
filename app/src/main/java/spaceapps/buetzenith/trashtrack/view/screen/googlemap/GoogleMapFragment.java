@@ -109,8 +109,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         @Override
         public void onCameraIdle() {
             if(debrisFragmentList!=null){
-                executorService.execute(GoogleMapFragment.this::plotDebrisList);
-               // plotDebrisList();
+               //executorService.execute(GoogleMapFragment.this::plotDebrisList);
+                plotDebrisList();
             }
         }
     };
@@ -187,6 +187,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
         mMap.getCameraPosition();
+        
+        mMap.setMinZoomPreference(2);
 
         mMap.setOnCameraIdleListener(cameraIdleListener);
 
@@ -195,6 +197,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
             // enable user location
             enableUserLocation();
+
+            animateCamera(latLng);
 
             getDebrisTrajectoryData();
         });
@@ -222,7 +226,8 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
                             DebrisFragment df = debrisFragmentList.get(i);
                             df.name = i + df.name;
                         }
-                        executorService.execute(GoogleMapFragment.this::plotDebrisList);
+                        //executorService.execute(GoogleMapFragment.this::plotDebrisList);
+                        plotDebrisList();
                     }
                 });
     }
@@ -260,7 +265,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         // init new selected satellite position.
         startPoint = getDebrisTrajectoryData(System.currentTimeMillis(), debrisFragment.extractTle());
 
-        mainActivity.runOnUiThread(()->{
+        //mainActivity.runOnUiThread(()->{
             if(!isInsideCamera(startPoint.getLatLng())){
                // Log.d(TAG, "initSpaceObjectPosition: removing "+debrisFragment.name);
                removeDebris(debrisFragment.name);
@@ -268,7 +273,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
                 Log.d(TAG, "initSpaceObjectPosition: adding "+debrisFragment.name);
                 addNewDebrisToGoogleMap(debrisFragment.name, startPoint.getLatLng());
             }
-        });
+       // });
 
 
 

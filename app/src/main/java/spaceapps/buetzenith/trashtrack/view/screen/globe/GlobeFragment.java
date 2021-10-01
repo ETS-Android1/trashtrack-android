@@ -16,21 +16,26 @@ import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 import com.neosensory.tlepredictionengine.Tle;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import gov.nasa.worldwind.shape.Ellipse;
 import spaceapps.buetzenith.trashtrack.databinding.FragmentGlobeBinding;
 import spaceapps.buetzenith.trashtrack.experimental.AtmosphereLayer;
+import spaceapps.buetzenith.trashtrack.service.model.DebrisFragment;
 import spaceapps.buetzenith.trashtrack.service.model.Satellite;
 import spaceapps.buetzenith.trashtrack.service.model.Trajectory;
 import spaceapps.buetzenith.trashtrack.service.model.TrajectoryData;
+import spaceapps.buetzenith.trashtrack.utils.DebrisCatalog;
 import spaceapps.buetzenith.trashtrack.utils.LatLngInterpolator;
 import spaceapps.buetzenith.trashtrack.utils.tle.TleToGeo;
 import spaceapps.buetzenith.trashtrack.view.adapter.SatelliteListAdapter;
 import spaceapps.buetzenith.trashtrack.view.screen.googlemap.DeviceLocationFinder;
+import spaceapps.buetzenith.trashtrack.viewModel.CelestrackViewModel;
 import spaceapps.buetzenith.trashtrack.viewModel.MainViewModel;
 import spaceapps.buetzenith.trashtrack.view.MainActivity;
 import gov.nasa.worldwind.Navigator;
@@ -61,7 +66,7 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
     DeviceLocationFinder deviceLocationFinder;
 
     @Inject
-    SatelliteListAdapter satelliteListAdapter;
+    CelestrackViewModel celestrackViewModel;
 
     @Inject
     MainViewModel mainViewModel;
@@ -74,6 +79,7 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
     //private Placemark lastplackmark;
     private boolean scaleUp = false;
 
+    private DebrisCatalog.Debris debris;
 
     //day night Animation settings
     private Location sunLocation = new Location(1.6, 18.6);
@@ -97,7 +103,10 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
         Log.d(TAG, "onCreate: ");
 
         //make the activity landscape for this fragment
-        //getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        if(getArguments()!=null){
+            debris = new Gson()
+                    .fromJson(getArguments().getString("debris"), DebrisCatalog.Debris.class);
+        }
 
         mainActivity = (MainActivity) this.getActivity();
         if (mainActivity.activityComponent == null)
@@ -190,7 +199,15 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
         locateSun();
         // when selected satellite is changed
         // we init the new satellite data
-        satelliteListAdapter.setSelectedSatelliteUpdateListener(this::initSatPosition);
+        //satelliteListAdapter.setSelectedSatelliteUpdateListener(this::initSatPosition);
+        celestrackViewModel.getTrajectoryTLE(debris)
+                .observe(this, debrisFragmentList -> {
+                    if(debrisFragmentList!=null)
+                        Log.d(TAG, "getDebrisTrajectoryData: total fragments: "+debrisFragmentList.size());
+                    for (DebrisFragment df : debrisFragmentList) {
+                        initSatPosition(df);
+                    }
+                });
     }
 
 
@@ -236,33 +253,35 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
      * locate the satellite and navigator camera accordingly after satellite data is initialized
      * called from fetchSatDataFromSSE method
      */
-    public void initSatPosition(Satellite satellite) {
-        Log.d(TAG, "initSatPosition: satellite name: " + satellite.getName());
+    public void initSatPosition(DebrisFragment debrisFragment) {
+        Log.d(TAG, "initSatPosition: satellite name: " + debrisFragment.name);
 
-        satelliteMoving = false;
+      /*  satelliteMoving = false;
         if (activeCameraValueAnimator != null && activeCameraValueAnimator.isRunning()) {
             activeCameraValueAnimator.end();
             Log.w(TAG, " stopped running camera value animator");
-        }
+        }*/
 
-        Tle tle = satellite.extractTle();
+        //Tle tle = satellite.extractTle();
         deviceLocationFinder.requestDeviceLocation(devicesLatLng -> {
-            Trajectory startPoint = TleToGeo.getPosition(tle, System.currentTimeMillis(), devicesLatLng);
+            Trajectory startPoint = TleToGeo.getPosition(debrisFragment.extractTle(), System.currentTimeMillis(), devicesLatLng);
 
             double lat = startPoint.getLat();
             double lng = startPoint.getLng();
-            double altitude = startPoint.getHeight();
+            double altitude = startPoint.getHeight()*1000; // meter
 
-            LatLng latLng = new LatLng(lat, lng);
+            Ellipse ellipse = new Ellipse(new Position(lat, lng, altitude), 100*1000, 100*1000);
 
-            // move camera to new selected satellite position in 500 milli seconds
+            renderableLayer.addRenderable(ellipse);
+
+           /* // move camera to new selected satellite position in 500 milli seconds
             moveCamera(latLng, altitude, 500);
 
             new Handler().postDelayed(() -> {
                 satelliteMoving = true;
                 lastTimeStamp = System.currentTimeMillis();
                 animateCamera();
-            }, 500);
+            }, 500);*/
         });
     }
 
@@ -274,18 +293,17 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
         }
         lastTimeStamp = lastTimeStamp + 60 * 60 * 1000;
         // calculate new trajectory data
-        Trajectory data = getSatelliteTrajectoryData(lastTimeStamp);
+        //Trajectory data = getSatelliteTrajectoryData(lastTimeStamp);
 
         // move camera to new position with predefined timestamp
-        moveCamera(data.getLatLng(), data.getHeight(), timeIntervalBetweenTwoData);
+      //  moveCamera(data.getLatLng(), data.getHeight(), timeIntervalBetweenTwoData);
 
         // recursively animate again after pre specified timestamp.
         new Handler().postDelayed(this::animateCamera, timeIntervalBetweenTwoData);
     }
 
-    private Trajectory getSatelliteTrajectoryData(long timestamp) {
+    private Trajectory getSatelliteTrajectoryData(long timestamp, Tle tle) {
         Log.d(TAG, "updateTrajectoryData: ");
-        Tle tle = satelliteListAdapter.getSelectedSatellite().extractTle();
         return TleToGeo.getPosition(tle, timestamp, deviceLocationFinder.getDeviceLatLng());
     }
 

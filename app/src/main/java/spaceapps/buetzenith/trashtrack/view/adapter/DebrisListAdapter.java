@@ -68,7 +68,8 @@ public class DebrisListAdapter extends RecyclerView.Adapter<DebrisListAdapter.Ho
         holder.mVB.originTv.setText(debris.origin);
 
         holder.mVB.globeBtn.setOnClickListener(v -> {
-
+            if(onClickListener!=null)
+                onClickListener.onClick(debris, R.id.globeFragment);
         });
 
         holder.mVB.mapBtn.setOnClickListener(v -> {

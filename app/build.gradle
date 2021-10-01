@@ -104,4 +104,7 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
 
     implementation 'org.apache.commons:commons-text:1.9'
+
+    //graphs
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }
