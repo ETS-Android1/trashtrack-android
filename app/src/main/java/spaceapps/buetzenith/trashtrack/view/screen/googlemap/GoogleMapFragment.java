@@ -40,7 +40,11 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.neosensory.tlepredictionengine.Tle;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +64,7 @@ import spaceapps.buetzenith.trashtrack.utils.DebrisCatalog;
 import spaceapps.buetzenith.trashtrack.utils.LatLngInterpolator;
 import spaceapps.buetzenith.trashtrack.utils.MapUtils;
 import spaceapps.buetzenith.trashtrack.utils.tle.TleToGeo;
+import spaceapps.buetzenith.trashtrack.view.custom.DateTimerPickerBottomDialog;
 import spaceapps.buetzenith.trashtrack.viewModel.CelestrackViewModel;
 import spaceapps.buetzenith.trashtrack.view.MainActivity;
 
@@ -82,6 +87,10 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     @Inject
     CelestrackViewModel celestrackViewModel;
 
+
+    @Inject
+    DateTimerPickerBottomDialog dateTimerPickerBottomDialog;
+
     //view
     private FragmentGoogleMapBinding mVB;
 
@@ -102,6 +111,9 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     public ViewPropertyAnimator satelliteAnimation;
 
     private List<DebrisFragment> debrisFragmentList;
+
+    // timeline
+    private Date currentActiveDate = new Date(System.currentTimeMillis());
 
     ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -148,6 +160,39 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         Log.d(TAG, "onViewCreated: ");
         satelliteMoveHandler = new Handler();
+
+        initDateTimePicker();
+
+        initDebrisViewData();
+
+    }
+
+    private void initDateTimePicker() {
+        mVB.dateTimePickerFab.setOnClickListener(v -> {
+            dateTimerPickerBottomDialog.show(mainActivity.getSupportFragmentManager(), "TAG");
+        });
+
+        dateTimerPickerBottomDialog.setOnDateTimeSelectedListener(date -> {
+            this.currentActiveDate = date;
+            updateCurrentDateTimeUI();
+            plotDebrisList();
+        });
+    }
+
+    private void initDebrisViewData(){
+        mVB.debrisNameTv.setText(debris.name);
+        String origin = "Origin: "+debris.origin;
+        mVB.originTv.setText(origin);
+        mVB.geoDataTv.setVisibility(View.GONE);
+
+        updateCurrentDateTimeUI();
+    }
+
+    private void updateCurrentDateTimeUI(){
+        // https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss a, dd MMM,yyyy");
+        String currentTime = "Current time: "+ simpleDateFormat.format(currentActiveDate);
+        mVB.dateTv.setText(currentTime);
     }
 
     @Override
@@ -184,11 +229,11 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this.getContext(),rawMapStyles[2]));
         //mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
+        //mMap.getUiSettings().setZoomControlsEnabled(true);
 
         mMap.getCameraPosition();
         
-        mMap.setMinZoomPreference(2);
+        mMap.setMinZoomPreference(3);
 
         mMap.setOnCameraIdleListener(cameraIdleListener);
 
@@ -263,7 +308,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
         // add satellite marker in startPoint
         // init new selected satellite position.
-        startPoint = getDebrisTrajectoryData(System.currentTimeMillis(), debrisFragment.extractTle());
+        startPoint = getDebrisTrajectoryData(currentActiveDate.getTime(), debrisFragment.extractTle());
 
         //mainActivity.runOnUiThread(()->{
             if(!isInsideCamera(startPoint.getLatLng())){
