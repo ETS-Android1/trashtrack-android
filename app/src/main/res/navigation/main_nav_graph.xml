@@ -16,10 +16,10 @@
         android:label="fragment_google_map"
         tools:layout="@layout/fragment_google_map" />
     <fragment
-        android:id="@+id/detailsFragment"
-        android:name="spaceapps.buetzenith.trashtrack.view.screen.DetailsFragment"
-        android:label="fragment_details"
-        tools:layout="@layout/fragment_details" />
+        android:id="@+id/graphFragment"
+        android:name="spaceapps.buetzenith.trashtrack.view.screen.GraphFragment"
+        android:label="Graph"
+        tools:layout="@layout/fragment_graph" />
     <fragment
         android:id="@+id/homeFragment"
         android:name="spaceapps.buetzenith.trashtrack.view.screen.HomeFragment"

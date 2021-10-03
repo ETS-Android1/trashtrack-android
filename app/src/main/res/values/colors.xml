@@ -3,7 +3,7 @@
     <color name="colorPrimary">#003B59</color>
     <color name="colorPrimaryDark">#00263e</color>
     <color name="colorPrimaryLight">#497a97</color>
-    <color name="colorAccent">#b17fa2</color>
+    <color name="colorAccent">#497a97</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="bgcolor_1">#202D38</color>
     <color name="stroke_color">#243443</color>
@@ -12,4 +12,5 @@
     <color name="blue_1">#0130DD</color>
     <color name="light_white_1">#E4E4E4</color>
     <color name="background_gray">#CC7F7F7F</color>
+    <color name="bg_color_main">#202D38</color>
 </resources>

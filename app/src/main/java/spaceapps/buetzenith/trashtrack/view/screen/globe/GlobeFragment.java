@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.transition.TransitionInflater;
 
 import android.os.Handler;
 import android.util.Log;
@@ -19,11 +21,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.neosensory.tlepredictionengine.Tle;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.inject.Inject;
 
 import gov.nasa.worldwind.shape.Ellipse;
+import spaceapps.buetzenith.trashtrack.R;
 import spaceapps.buetzenith.trashtrack.databinding.FragmentGlobeBinding;
 import spaceapps.buetzenith.trashtrack.experimental.AtmosphereLayer;
 import spaceapps.buetzenith.trashtrack.service.model.DebrisFragment;
@@ -34,6 +39,7 @@ import spaceapps.buetzenith.trashtrack.utils.DebrisCatalog;
 import spaceapps.buetzenith.trashtrack.utils.LatLngInterpolator;
 import spaceapps.buetzenith.trashtrack.utils.tle.TleToGeo;
 import spaceapps.buetzenith.trashtrack.view.adapter.SatelliteListAdapter;
+import spaceapps.buetzenith.trashtrack.view.custom.DateTimerPickerBottomDialog;
 import spaceapps.buetzenith.trashtrack.view.screen.googlemap.DeviceLocationFinder;
 import spaceapps.buetzenith.trashtrack.viewModel.CelestrackViewModel;
 import spaceapps.buetzenith.trashtrack.viewModel.MainViewModel;
@@ -69,6 +75,9 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
     CelestrackViewModel celestrackViewModel;
 
     @Inject
+    DateTimerPickerBottomDialog dateTimerPickerBottomDialog;
+
+    @Inject
     MainViewModel mainViewModel;
 
     @Inject
@@ -97,10 +106,17 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
     public ValueAnimator activeCameraValueAnimator; //move the camera to animatedly
 
 
+    // timeline
+    private Date currentActiveDate = new Date(System.currentTimeMillis());
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: ");
+
+        TransitionInflater inflater = TransitionInflater.from(requireContext());
+        super.setEnterTransition(inflater.inflateTransition(R.transition.slide_in_from_right));
 
         //make the activity landscape for this fragment
         if(getArguments()!=null){
@@ -132,6 +148,10 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
         super.onViewCreated(view, savedInstanceState);
         Log.d(TAG, "onViewCreated: ");
 
+        mVB.backButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).popBackStack();
+        });
+
         // Create a layer to display the  labels and satellites
         renderableLayer = new RenderableLayer();
         worldWindow.getLayers().addLayer(renderableLayer);
@@ -151,6 +171,38 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
             label.setRotation(WorldWind.RELATIVE_TO_GLOBE); //will rotate when we will rotate the globe
             renderableLayer.addRenderable(label); // add the label to layer
         });
+
+        initDateTimePicker();
+
+        initDebrisViewData();
+    }
+
+    private void initDateTimePicker() {
+        mVB.dateTimePickerFab.setOnClickListener(v -> {
+            dateTimerPickerBottomDialog.show(mainActivity.getSupportFragmentManager(), "TAG");
+        });
+
+        dateTimerPickerBottomDialog.setOnDateTimeSelectedListener(date -> {
+            this.currentActiveDate = date;
+            updateCurrentDateTimeUI();
+            //plotDebrisList();
+        });
+    }
+
+    private void initDebrisViewData(){
+        mVB.debrisNameTv.setText(debris.name);
+        String origin = "Origin: "+debris.origin;
+        mVB.originTv.setText(origin);
+        mVB.geoDataTv.setVisibility(View.GONE);
+
+        updateCurrentDateTimeUI();
+    }
+
+    private void updateCurrentDateTimeUI(){
+        // https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss a, dd MMM,yyyy");
+        String currentTime = "Current time: "+ simpleDateFormat.format(currentActiveDate);
+        mVB.dateTv.setText(currentTime);
     }
 
 

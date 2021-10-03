@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.transition.TransitionInflater;
 
 import android.os.Handler;
 import android.util.Log;
@@ -87,7 +89,6 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     @Inject
     CelestrackViewModel celestrackViewModel;
 
-
     @Inject
     DateTimerPickerBottomDialog dateTimerPickerBottomDialog;
 
@@ -134,6 +135,9 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: ");
 
+        TransitionInflater inflater = TransitionInflater.from(requireContext());
+        super.setEnterTransition(inflater.inflateTransition(R.transition.slide_in_from_right));
+
         if(getArguments()!=null){
             debris = new Gson()
                     .fromJson(getArguments().getString("debris"), DebrisCatalog.Debris.class);
@@ -160,6 +164,10 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         Log.d(TAG, "onViewCreated: ");
         satelliteMoveHandler = new Handler();
+
+        mVB.backButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).popBackStack();
+        });
 
         initDateTimePicker();
 

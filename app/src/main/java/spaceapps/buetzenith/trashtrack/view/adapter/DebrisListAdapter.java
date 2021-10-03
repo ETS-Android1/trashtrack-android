@@ -78,7 +78,8 @@ public class DebrisListAdapter extends RecyclerView.Adapter<DebrisListAdapter.Ho
         });
 
         holder.mVB.graphBtn.setOnClickListener(v -> {
-
+            if(onClickListener !=null)
+                onClickListener.onClick(debris, R.id.graphFragment);
         });
     }
 
