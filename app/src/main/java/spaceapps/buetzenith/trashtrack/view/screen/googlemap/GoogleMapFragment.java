@@ -42,8 +42,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.neosensory.tlepredictionengine.Tle;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,15 +50,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import okhttp3.internal.platform.Platform;
 import spaceapps.buetzenith.trashtrack.R;
 import spaceapps.buetzenith.trashtrack.databinding.FragmentGoogleMapBinding;
-import spaceapps.buetzenith.trashtrack.service.model.DebrisFragment;
+import spaceapps.buetzenith.trashtrack.service.model.TLEParsed;
 import spaceapps.buetzenith.trashtrack.service.model.Trajectory;
 import spaceapps.buetzenith.trashtrack.utils.DebrisCatalog;
 import spaceapps.buetzenith.trashtrack.utils.LatLngInterpolator;
@@ -111,7 +106,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     public ValueAnimator activeSatAnimator;
     public ViewPropertyAnimator satelliteAnimation;
 
-    private List<DebrisFragment> debrisFragmentList;
+    private List<TLEParsed> TLEParsedList;
 
     // timeline
     private Date currentActiveDate = new Date(System.currentTimeMillis());
@@ -121,7 +116,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     GoogleMap.OnCameraIdleListener cameraIdleListener = new GoogleMap.OnCameraIdleListener() {
         @Override
         public void onCameraIdle() {
-            if(debrisFragmentList!=null){
+            if(TLEParsedList !=null){
                //executorService.execute(GoogleMapFragment.this::plotDebrisList);
                 plotDebrisList();
             }
@@ -145,7 +140,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
         mainActivity = (MainActivity) this.getActivity();
         if (mainActivity.activityComponent == null)
-            mainActivity.initActivityComponent();
+            mainActivity.initDaggerActivityComponent();
         mainActivity.activityComponent.inject(this);
     }
 
@@ -270,13 +265,13 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
         if(debris == null){
             return;
         }
-        celestrackViewModel.getTrajectoryTLE(debris)
+        celestrackViewModel.getDebrisPieces(debris)
                 .observe(this, debrisFragments -> {
-                    this.debrisFragmentList = debrisFragments;
-                    if(debrisFragmentList!=null){
+                    this.TLEParsedList = debrisFragments;
+                    if(TLEParsedList !=null){
                         Log.d(TAG, "getDebrisTrajectoryData: total fragments: "+debrisFragments.size());
                         for (int i = 0; i < debrisFragments.size(); i++) {
-                            DebrisFragment df = debrisFragmentList.get(i);
+                            TLEParsed df = TLEParsedList.get(i);
                             df.name = i + df.name;
                         }
                         //executorService.execute(GoogleMapFragment.this::plotDebrisList);
@@ -287,7 +282,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
 
     private void plotDebrisList(){
-        for (DebrisFragment df : debrisFragmentList) {
+        for (TLEParsed df : TLEParsedList) {
             initSpaceObjectPosition(df);
         }
     }
@@ -299,7 +294,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-    public void initSpaceObjectPosition(DebrisFragment debrisFragment) {
+    public void initSpaceObjectPosition(TLEParsed TLEParsed) {
         //Log.d(TAG, "initSpaceObjectPosition: inside.");
         //make null so that know line is drawn
         /*satelliteMoving = false; // finish the satellite move thread
@@ -316,15 +311,17 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
 
         // add satellite marker in startPoint
         // init new selected satellite position.
-        startPoint = getDebrisTrajectoryData(currentActiveDate.getTime(), debrisFragment.extractTle());
+        startPoint = getDebrisTrajectoryData(currentActiveDate.getTime(), TLEParsed.extractTle());
+
+        Log.d(TAG, "initSpaceObjectPosition: "+ TLEParsed.name+" speed: "+startPoint.getSpeed());
 
         //mainActivity.runOnUiThread(()->{
             if(!isInsideCamera(startPoint.getLatLng())){
                // Log.d(TAG, "initSpaceObjectPosition: removing "+debrisFragment.name);
-               removeDebris(debrisFragment.name);
+               removeDebris(TLEParsed.name);
             }else{
-                Log.d(TAG, "initSpaceObjectPosition: adding "+debrisFragment.name);
-                addNewDebrisToGoogleMap(debrisFragment.name, startPoint.getLatLng());
+                Log.d(TAG, "initSpaceObjectPosition: adding "+ TLEParsed.name);
+                addNewDebrisToGoogleMap(TLEParsed.name, startPoint.getLatLng());
             }
        // });
 
@@ -387,7 +384,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
     /**
      * This recursive function helps to move the satellite
      */
-    public void moveSatellite(DebrisFragment debrisFragment) {
+    public void moveSatellite(TLEParsed TLEParsed) {
         if (!satelliteMoving) { // thread finish condition.
             return;
         }
@@ -396,11 +393,11 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
             activeSatAnimator.end();
         }
         // next end point
-        endPoint = getDebrisTrajectoryData(System.currentTimeMillis() + timeIntervalBetweenTwoData, debrisFragment.extractTle());
+        endPoint = getDebrisTrajectoryData(System.currentTimeMillis() + timeIntervalBetweenTwoData, TLEParsed.extractTle());
         updateSatelliteLocation(endPoint, timeIntervalBetweenTwoData);
 
         satelliteMoveHandler.postDelayed(()->{
-            moveSatellite(debrisFragment);
+            moveSatellite(TLEParsed);
         }, timeIntervalBetweenTwoData);
     }
 

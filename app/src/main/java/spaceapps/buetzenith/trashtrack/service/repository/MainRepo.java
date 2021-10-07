@@ -14,7 +14,7 @@ import spaceapps.buetzenith.trashtrack.dagger.module.NetworkModule;
 import spaceapps.buetzenith.trashtrack.service.api.ApiCaller;
 import spaceapps.buetzenith.trashtrack.service.api.OnFinishListener;
 import spaceapps.buetzenith.trashtrack.service.model.Satellite;
-import spaceapps.buetzenith.trashtrack.service.room.SatelliteDao;
+import spaceapps.buetzenith.trashtrack.service.room.TLEParsedDao;
 
 @MainActivityScope
 public class MainRepo {
@@ -24,7 +24,7 @@ public class MainRepo {
     ExecutorService roomExecutorService;
 
     @Inject
-    SatelliteDao satelliteDao;
+    TLEParsedDao TLEParsedDao;
 
     @Inject
     NetworkModule.SpaceTrackApi spaceTrackApi;
@@ -49,9 +49,9 @@ public class MainRepo {
                                     Log.d(TAG, "onSuccess: tle found, sat: "+tle.optString("name"));
                                     sat.setTleLine1(tle.optString("line1"));
                                     sat.setTleLine2(tle.optString("line2"));
-                                    roomExecutorService.execute(()->{
-                                        satelliteDao.insert(sat);
-                                    });
+                                    /*roomExecutorService.execute(()->{
+                                        TLEParsedDao.insert(sat);
+                                    });*/
                                 }else
                                     throw  new Exception();
                             } catch (Exception e) {

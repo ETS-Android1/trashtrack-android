@@ -31,14 +31,12 @@ import gov.nasa.worldwind.shape.Ellipse;
 import spaceapps.buetzenith.trashtrack.R;
 import spaceapps.buetzenith.trashtrack.databinding.FragmentGlobeBinding;
 import spaceapps.buetzenith.trashtrack.experimental.AtmosphereLayer;
-import spaceapps.buetzenith.trashtrack.service.model.DebrisFragment;
-import spaceapps.buetzenith.trashtrack.service.model.Satellite;
+import spaceapps.buetzenith.trashtrack.service.model.TLEParsed;
 import spaceapps.buetzenith.trashtrack.service.model.Trajectory;
 import spaceapps.buetzenith.trashtrack.service.model.TrajectoryData;
 import spaceapps.buetzenith.trashtrack.utils.DebrisCatalog;
 import spaceapps.buetzenith.trashtrack.utils.LatLngInterpolator;
 import spaceapps.buetzenith.trashtrack.utils.tle.TleToGeo;
-import spaceapps.buetzenith.trashtrack.view.adapter.SatelliteListAdapter;
 import spaceapps.buetzenith.trashtrack.view.custom.DateTimerPickerBottomDialog;
 import spaceapps.buetzenith.trashtrack.view.screen.googlemap.DeviceLocationFinder;
 import spaceapps.buetzenith.trashtrack.viewModel.CelestrackViewModel;
@@ -126,7 +124,7 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
 
         mainActivity = (MainActivity) this.getActivity();
         if (mainActivity.activityComponent == null)
-            mainActivity.initActivityComponent();
+            mainActivity.initDaggerActivityComponent();
         mainActivity.activityComponent.inject(this);
     }
 
@@ -252,11 +250,11 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
         // when selected satellite is changed
         // we init the new satellite data
         //satelliteListAdapter.setSelectedSatelliteUpdateListener(this::initSatPosition);
-        celestrackViewModel.getTrajectoryTLE(debris)
+        celestrackViewModel.getDebrisPieces(debris)
                 .observe(this, debrisFragmentList -> {
                     if(debrisFragmentList!=null)
                         Log.d(TAG, "getDebrisTrajectoryData: total fragments: "+debrisFragmentList.size());
-                    for (DebrisFragment df : debrisFragmentList) {
+                    for (TLEParsed df : debrisFragmentList) {
                         initSatPosition(df);
                     }
                 });
@@ -305,8 +303,8 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
      * locate the satellite and navigator camera accordingly after satellite data is initialized
      * called from fetchSatDataFromSSE method
      */
-    public void initSatPosition(DebrisFragment debrisFragment) {
-        Log.d(TAG, "initSatPosition: satellite name: " + debrisFragment.name);
+    public void initSatPosition(TLEParsed TLEParsed) {
+        Log.d(TAG, "initSatPosition: satellite name: " + TLEParsed.name);
 
       /*  satelliteMoving = false;
         if (activeCameraValueAnimator != null && activeCameraValueAnimator.isRunning()) {
@@ -316,7 +314,7 @@ public class GlobeFragment extends Fragment implements Choreographer.FrameCallba
 
         //Tle tle = satellite.extractTle();
         deviceLocationFinder.requestDeviceLocation(devicesLatLng -> {
-            Trajectory startPoint = TleToGeo.getPosition(debrisFragment.extractTle(), System.currentTimeMillis(), devicesLatLng);
+            Trajectory startPoint = TleToGeo.getPosition(TLEParsed.extractTle(), System.currentTimeMillis(), devicesLatLng);
 
             double lat = startPoint.getLat();
             double lng = startPoint.getLng();

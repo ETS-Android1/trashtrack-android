@@ -16,6 +16,12 @@ import spaceapps.buetzenith.trashtrack.service.model.Trajectory;
 public class TleToGeo {
     private static final String TAG = "TleToGeo";
 
+    public static Trajectory getPosition(Tle tle){
+        return getPosition(tle, Calendar.getInstance().getTime(), null);
+    }
+    public static Trajectory getPosition(Tle tle, long timestamp){
+        return getPosition(tle, timestamp, null);
+    }
 
     public static Trajectory getPosition(Tle tle, LatLng latLng) {
         return getPosition(tle, Calendar.getInstance().getTime(), latLng);
@@ -32,7 +38,7 @@ public class TleToGeo {
 
         Date currentTime = cal.getTime();
         double[][] rv = tle.getRV(currentTime);
-        return new Trajectory(rv, currentTime, latLng.latitude ,latLng.longitude); //y
+        return new Trajectory(rv, currentTime, latLng); //y
     }
 
     /**

@@ -11,7 +11,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import spaceapps.buetzenith.trashtrack.service.room.SatelliteDao;
+import spaceapps.buetzenith.trashtrack.service.room.TLEParsedDao;
 import spaceapps.buetzenith.trashtrack.service.room.DebrisXDatabase;
 import spaceapps.buetzenith.trashtrack.view.App;
 
@@ -43,8 +43,8 @@ public abstract class RoomModule{
 
     @Provides
     @Singleton
-    static SatelliteDao provideNoteDao(App app){
+    static TLEParsedDao provideNoteDao(App app){
         Log.d(TAG, "provideNoteDao: creating note dao...");
-        return provideDebrisXDataBase(app).satelliteDao();
+        return provideDebrisXDataBase(app).tleParsedDao();
     }
 }

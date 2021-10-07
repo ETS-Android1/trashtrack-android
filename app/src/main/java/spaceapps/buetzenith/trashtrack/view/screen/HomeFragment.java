@@ -1,25 +1,20 @@
 package spaceapps.buetzenith.trashtrack.view.screen;
 
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
-import spaceapps.buetzenith.trashtrack.R;
 import spaceapps.buetzenith.trashtrack.databinding.FragmentHomeBinding;
 import spaceapps.buetzenith.trashtrack.utils.DebrisCatalog;
 import spaceapps.buetzenith.trashtrack.view.MainActivity;
@@ -42,7 +37,7 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mainActivity = (MainActivity) this.getActivity();
         if (mainActivity.activityComponent == null)
-            mainActivity.initActivityComponent();
+            mainActivity.initDaggerActivityComponent();
         mainActivity.activityComponent.inject(this);
     }
 

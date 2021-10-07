@@ -1,10 +1,8 @@
 package spaceapps.buetzenith.trashtrack.view;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavInflater;
 import androidx.navigation.Navigation;
@@ -69,35 +67,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
-
+        // init view
         mVB = ActivityMainBinding.inflate(super.getLayoutInflater());
         setContentView(mVB.getRoot());
 
-
+        // init dagger
         if (activityComponent == null)
-            initActivityComponent();
+            initDaggerActivityComponent();
         activityComponent.inject(this);
 
+        // data
         fetchInitialData();
 
-
+        // nav controller
         navController = Navigation.findNavController(this, R.id.mainActv_nav_host_frag);
 
-
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-            @Override
-            public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                activeFragmentId = controller.getCurrentDestination().getId();
-                Log.w(TAG, "acitveFragmentId:" + activeFragmentId);
-            }
-        });
+        // calculate 6 hour risk analysis
+        riskAnalysis();
     }
 
 
-
-
-
-    public void initActivityComponent() {
+    public void initDaggerActivityComponent() {
         AppComponent appComponent = ((App) getApplication()).getAppComponent();
         activityComponent = appComponent.activityComponentBuilder()
                 .activityModule(new ActivityModule(this))
@@ -105,12 +95,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void getDeviceLocation() {
+    private void riskAnalysis() {
         Log.d(TAG, "getDeviceLocation: ");
         deviceLocationFinder.requestDeviceLocation(new DeviceLocationFinder.OnDeviceLocationFoundListener() {
             @Override
             public void onDeviceLocationFound(LatLng latLng) {
                 Log.d(TAG, "onDeviceLocationFound: " + latLng);
+
             }
         });
     }
@@ -120,18 +111,8 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> satCodeList = new ArrayList<>(Collections.singletonList(
                 "sun"
         ));
-
         fetchSatDataFromSSC(satCodeList);
-
         spaceTrackViewModel.login();
-
-        //spaceTrackViewModel.fetchData();
-
-      /*  mainViewModel.getSatelliteDataList()
-                .observe(this, satellites -> {
-                    Log.d(TAG, "fetchSatelliteDataFromAppScript: size: " + satellites.size());
-                    satelliteListAdapter.setSatelliteList(satellites);
-                });*/
     }
 
     /**

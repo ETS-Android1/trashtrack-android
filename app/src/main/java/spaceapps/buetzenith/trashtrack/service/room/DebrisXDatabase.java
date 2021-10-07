@@ -3,9 +3,9 @@ package spaceapps.buetzenith.trashtrack.service.room;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-import spaceapps.buetzenith.trashtrack.service.model.Satellite;
+import spaceapps.buetzenith.trashtrack.service.model.TLEParsed;
 
-@Database(entities = {Satellite.class},exportSchema = false, version = 1)
+@Database(entities = {TLEParsed.class},exportSchema = false, version = 1)
 public abstract class DebrisXDatabase extends RoomDatabase {
-    public abstract SatelliteDao satelliteDao(); // room will implement this
+    public abstract TLEParsedDao tleParsedDao(); // room will implement this
 }

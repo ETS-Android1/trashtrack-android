@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/drawer"
-    android:background="@color/bg_color_main"
     tools:context=".view.MainActivity">
 
 

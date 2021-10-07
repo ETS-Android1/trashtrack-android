@@ -11,24 +11,33 @@ import java.util.Date;
 import spaceapps.buetzenith.trashtrack.utils.tle.TleToGeo;
 
 public class Trajectory {
-    private static final String TAG = "SatelliteTrajectory";
+    private static final String TAG = "Trajectory";
     private final double x;
     private final double y;
     private final double z;
-    private final TleToGeo.Eci positionEci;
+
     private final double lat;
     private final double lng;
     private final double alt;
     private double speed;
     private Date time;
-    private double azimuth;
-    private double elevation;
-    private double deviceLat;
-    private double deviceLng;
 
-    public Trajectory(double[][] rv, Date currentTime, double deviceLat, double deviceLng) {
-        this.deviceLat = deviceLat;
-        this.deviceLng = deviceLng;
+    private final TleToGeo.Eci positionEci;
+
+    private Double azimuth = null;
+    private Double elevation = null;
+    private Double deviceLat = null;
+    private Double deviceLng = null;
+
+    public Trajectory(double[][] rv, Date currentTime) {
+        this(rv, currentTime, null);
+    }
+
+    public Trajectory(double[][] rv, Date currentTime, LatLng deviceLatLng) {
+        if(deviceLatLng!=null){
+            this.deviceLat = deviceLatLng.latitude;
+            this.deviceLng = deviceLatLng.longitude;
+        }
 
         // r is satellite position vector in km using TEME (from center of Earth)
         // v is the velocity vector in 3d space.
@@ -54,7 +63,8 @@ public class Trajectory {
 
         this.time = currentTime;
 
-        this.calculateAzimuthElevation(deviceLat, deviceLng);
+        if(deviceLatLng !=null)
+            this.calculateAzimuthElevation(deviceLat, deviceLng);
     }
 
     public Date getTime() {
@@ -104,6 +114,9 @@ public class Trajectory {
     // what is azimuth and elevation
     // https://www.youtube.com/watch?v=T4ABS-ILhyc
     public void calculateAzimuthElevation(double latDeg, double lngDeg) {
+        if(deviceLat==null)
+            return;
+
         this.deviceLat = latDeg;
         this.deviceLng = lngDeg;
         TleToGeo.Geodetic observerGeodetic =
