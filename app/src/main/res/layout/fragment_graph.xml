@@ -50,6 +50,7 @@
                 app:layout_constraintStart_toStartOf="@+id/lineChart"
                 app:layout_constraintTop_toTopOf="@+id/lineChart" />
             <com.github.mikephil.charting.charts.LineChart
+                android:visibility="invisible"
                 android:id="@+id/lineChart"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"

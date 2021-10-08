@@ -23,6 +23,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -50,6 +51,10 @@ public class GraphFragment extends Fragment {
 
     FragmentGraphBinding mVB;
 
+    private RiskAnalysis riskAnalysis;
+
+    private LatLng deviceLatLng;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +81,7 @@ public class GraphFragment extends Fragment {
         super.onResume();
         mVB.lineChart.setVisibility(View.INVISIBLE);
         mVB.analysisLoading.setVisibility(View.VISIBLE);
+        analyze();
     }
 
     @Override
@@ -88,6 +94,11 @@ public class GraphFragment extends Fragment {
         mVB.altTv.setText("500");
 
         deviceLocationFinder.requestDeviceLocation(latLng -> {
+            this.deviceLatLng = latLng;
+
+            mVB.latTv.setText(""+latLng.latitude);
+            mVB.longTv.setText(""+latLng.longitude);
+
             int hour = 6;
             int alt = 500;
             try{
@@ -97,64 +108,51 @@ public class GraphFragment extends Fragment {
                 Log.e(TAG, "onViewCreated: value must be int");
             }
 
-            RiskAnalysis riskAnalysis = new RiskAnalysis(latLng, alt, 500, hour);
+            riskAnalysis = new RiskAnalysis(latLng, alt, 500, hour);
             riskAnalysis.setOnAnalysisFinish(map -> mainActivity.runOnUiThread(()->{
                 initGraph(map);
             }));
             celestrackViewModel.getAllDebrisPiecesData()
                     .observe(getViewLifecycleOwner(), riskAnalysis::countInside);
-
-            mVB.analyzeBtn.setOnClickListener(v -> {
-                mVB.lineChart.setVisibility(View.INVISIBLE);
-                mVB.analysisLoading.setVisibility(View.VISIBLE);
-                celestrackViewModel.getAllDebrisPiecesData()
-                        .observe(getViewLifecycleOwner(), riskAnalysis::countInside);
-            });
         });
 
         mVB.backButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).popBackStack();
         });
 
-        deviceLocationFinder.requestDeviceLocation(latLng -> {
-            mVB.latTv.setText(""+latLng.latitude);
-            mVB.longTv.setText(""+latLng.longitude);
+        mVB.analyzeBtn.setOnClickListener(v -> {
+            analyze();
         });
-
-
     }
 
-    /*private void initGraph(Map<Integer, Integer> map){
-        ArrayList<BarEntry> dataValues = new ArrayList<>();
-        *//*for (int i = 0; i < 6; i++) {
-            dataValues.add(new Entry(i, map.get(i)));
-        }*//*
-        for (Map.Entry<Integer, Integer> entry :
-                map.entrySet()) {
-            Log.d(TAG, "initGraph: hour: "+entry.getKey()+" , cnt: "+entry.getKey());
-            dataValues.add(new BarEntry(entry.getKey(), entry.getValue()));
+    private void analyze(){
+        if(riskAnalysis == null)
+            return;
+
+        mVB.lineChart.setVisibility(View.INVISIBLE);
+        mVB.analysisLoading.setVisibility(View.VISIBLE);
+
+        int hour = 6;
+        int alt = 500;
+        double lat = deviceLatLng.latitude;
+        double lon = deviceLatLng.longitude;
+        try{
+            hour = Integer.parseInt(Objects.requireNonNull(mVB.numberOfHourEdt.getText()).toString());
+            alt = Integer.parseInt(Objects.requireNonNull(mVB.altTv.getText()).toString());
+            lat = Double.parseDouble(Objects.requireNonNull(mVB.latTv.getText()).toString());
+            lon = Double.parseDouble(Objects.requireNonNull(mVB.longTv.getText()).toString());
+        }catch (Exception e){
+            Log.e(TAG, "analyze(): error parsing input value");
         }
 
-        BarDataSet lineDataSet = new BarDataSet(dataValues, "Number of Debris");
-        lineDataSet.setValueTextColor(Color.WHITE);
+        riskAnalysis.setHours(hour);
+        riskAnalysis.setAlt(alt);
+        riskAnalysis.setLatLng(new LatLng(lat, lon));
 
-        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
-        dataSets.add(lineDataSet);
+        celestrackViewModel.getAllDebrisPiecesData()
+                .observe(getViewLifecycleOwner(), riskAnalysis::countInside);
+    }
 
-        BarData data = new BarData(dataSets);
-        data.setValueTextColor(Color.WHITE);
-        mVB.lineChart.setData(data);
-        mVB.lineChart.invalidate();
-
-        mVB.lineChart.getDescription().setText("Hour");
-        mVB.lineChart.getDescription().setTextColor(Color.WHITE);
-
-        mVB.lineChart.getXAxis().setTextColor(Color.WHITE);
-        mVB.lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-
-        mVB.lineChart.getAxisLeft().setTextColor(Color.WHITE);
-        mVB.lineChart.getAxisRight().setEnabled(false);
-    }*/
 
     private void initGraph(Map<Integer, Integer> map){
         mVB.lineChart.setVisibility(View.VISIBLE);
@@ -187,4 +185,36 @@ public class GraphFragment extends Fragment {
         mVB.lineChart.getAxisLeft().setTextColor(Color.WHITE);
         mVB.lineChart.getAxisRight().setEnabled(false);
     }
+
+     /*private void initGraph(Map<Integer, Integer> map){
+        ArrayList<BarEntry> dataValues = new ArrayList<>();
+        *//*for (int i = 0; i < 6; i++) {
+            dataValues.add(new Entry(i, map.get(i)));
+        }*//*
+        for (Map.Entry<Integer, Integer> entry :
+                map.entrySet()) {
+            Log.d(TAG, "initGraph: hour: "+entry.getKey()+" , cnt: "+entry.getKey());
+            dataValues.add(new BarEntry(entry.getKey(), entry.getValue()));
+        }
+
+        BarDataSet lineDataSet = new BarDataSet(dataValues, "Number of Debris");
+        lineDataSet.setValueTextColor(Color.WHITE);
+
+        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+        dataSets.add(lineDataSet);
+
+        BarData data = new BarData(dataSets);
+        data.setValueTextColor(Color.WHITE);
+        mVB.lineChart.setData(data);
+        mVB.lineChart.invalidate();
+
+        mVB.lineChart.getDescription().setText("Hour");
+        mVB.lineChart.getDescription().setTextColor(Color.WHITE);
+
+        mVB.lineChart.getXAxis().setTextColor(Color.WHITE);
+        mVB.lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        mVB.lineChart.getAxisLeft().setTextColor(Color.WHITE);
+        mVB.lineChart.getAxisRight().setEnabled(false);
+    }*/
 }

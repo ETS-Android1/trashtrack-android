@@ -47,6 +47,38 @@ public class RiskAnalysis {
         this.hours = durationInHour;
     }
 
+    public LatLng getLatLng() {
+        return latLng;
+    }
+
+    public void setLatLng(LatLng latLng) {
+        this.latLng = latLng;
+    }
+
+    public int getAlt() {
+        return alt;
+    }
+
+    public void setAlt(int alt) {
+        this.alt = alt;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public int getHours() {
+        return hours;
+    }
+
+    public void setHours(int hours) {
+        this.hours = hours;
+    }
+
     public void countInside(List<TLEParsed> tleParsedList){
         Log.d(TAG, "countInside: ");
         executorService.execute(()->{
@@ -90,18 +122,8 @@ public class RiskAnalysis {
         return flag;
     }
 
+
     // https://www.movable-type.co.uk/scripts/latlong.html
-    private double haversine_distance(LatLng mk1, LatLng mk2) {
-        double R = 6371; // Radius of the Earth in miles
-        double rlat1 = mk1.latitude * (Math.PI / 180); // Convert degrees to radians
-        double rlat2 = mk2.latitude * (Math.PI / 180); // Convert degrees to radians
-        double difflat = rlat2 - rlat1; // Radian difference (latitudes)
-        double difflon = (mk2.longitude - mk1.longitude) * (Math.PI / 180); // Radian difference (longitudes)
-
-        double d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
-        return d;
-    }
-
     private double getDistanceFromLatLonInKm(LatLng latLng1,LatLng latLng2) {
         double lat1 = latLng1.latitude;
         double lat2 = latLng2.latitude;

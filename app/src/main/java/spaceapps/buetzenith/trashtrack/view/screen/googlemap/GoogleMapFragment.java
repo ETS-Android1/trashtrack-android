@@ -376,7 +376,7 @@ public class GoogleMapFragment extends Fragment implements OnMapReadyCallback {
                 .center(latLng)
                 .fillColor(Color.RED)
                 .strokeColor(Color.RED)
-                .radius(10_000);// in meter
+                .radius(15_000);// in meter
 
         return mMap.addCircle(circleOptions);
     }
