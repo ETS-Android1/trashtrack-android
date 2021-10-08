@@ -15,5 +15,5 @@
     <color name="bg_color_main">#202D38</color>
     <color name="light_blue">#8BEAFE</color>
    // https://stackoverflow.com/questions/52175748/issue-change-border-color-or-box-stroke-for-unfocused-textinputlayout-in-androi
-    <color name="mtrl_textinput_default_box_stroke_color">#fff</color>
+    <color name="mtrl_textinput_default_box_stroke_color">#99E4E4E4</color>
 </resources>

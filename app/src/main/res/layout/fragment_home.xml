@@ -7,35 +7,33 @@
     android:background="@drawable/app_background"
     tools:context=".view.screen.HomeFragment">
 
-    <LinearLayout
-        android:id="@+id/searchView"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/search_edt_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/search_background_shape"
+        android:textColor="@color/light_white_1"
+        android:textColorHint="#99E4E4E4"
+        app:startIconTint="#99E4E4E4"
+        app:boxStrokeColor="@color/light_blue"
+        app:boxStrokeWidth="2dp"
+        app:startIconDrawable="@drawable/ic_baseline_search_24"
+        app:hintTextColor="@color/light_blue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:src="@drawable/ic_baseline_search_24" />
-
-        <TextView
-            android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/search_tv"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Search debris"
-            android:layout_marginStart="8dp"
-            style="@style/TextAppearance.AppCompat.Subhead"
-            android:fontFamily="@font/open_sans"
-            android:layout_gravity="center"
-            android:textColor="@color/stroke_color_1"
-            />
-    </LinearLayout>
+            android:hint="Search debris"
+            android:textColor="@android:color/white" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -48,7 +46,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView"
+        app:layout_constraintTop_toBottomOf="@+id/search_edt_layout"
         tools:listitem="@layout/card_debris" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
