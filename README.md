@@ -27,16 +27,18 @@ This application is developped by team [BUET Zenith] for solving the challenge [
 ## Project Architecture
 Our android app collects orbital parameters for each currently tracked debris object in Earth orbit from Celestrack and Spacetrack API.
 After that, we calculated the geographical position i.e latitude, longitude, altitude using and
-TLE prediction library which is implemented using Simplified General Perturbations 4(SGP4) multiplatform implementation.  
-
+[TLE prediction library](https://github.com/neosensory/tle-prediction-engine) which is implemented using [Simplified General Perturbations 4(SGP4)](https://github.com/aholinch/sgp4/) multiplatform implementation.  
+![](readme/image/Process.png)
 After calculating the geographical position of each debris object we visualized them in 2d map using google maps android SDK 
 and also in 3d virtual globe using Nasa whirlwind Android SDK.
+![](readme/image/arch.png)
 
 ## Project datasoure
 - [Celestrack](https://celestrak.com/NORAD/elements/)
 - [Spacetrack](https://www.space-track.org/)
 
 ## Project features
+![](readme/image/feature.png)
 __Debris Catalog:__ We made a catalog of currently tracked debris orbiting around the Earth by 
 collecting data from Celestrack and Spacetrack API and their information from the Nasa website, Wikipedia, and other reliable sources.
 
