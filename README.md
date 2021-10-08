@@ -1,6 +1,5 @@
 # Trashtrack
-Trash track is open-source geospatial(map and virtual globe based) android app that locates and displays every known debris objects in Earth's orbit in real time.
-This application is developped by team [BUET Zenith] for solving the challenge [Mapping Space Trash in Real Time] in [Nasa space apps challenge 2021].
+Trash track is an open-source geospatial(map and virtual globe-based) android app that locates and displays every known debris object in Earth's orbit in real-time. This application is developed by our team [BUET Zenith] for solving the challenge [Mapping Space Trash in Real Time] in [Nasa space apps challenge 2021].
 
 ## Submission
 [https://2021.spaceappschallenge.org/challenges/statements/mapping-space-trash-in-real-time/teams/buet-zenith-2/project]
